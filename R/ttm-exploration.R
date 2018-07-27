@@ -2,6 +2,7 @@ library(data.table)
 library(ggplot2)
 library(ggthemes)
 library(GGally)
+library(psych)
 
 # Multiple plot function
 #
@@ -90,6 +91,6 @@ ggplot(td, aes(x=spread_ttm_dvr_ratio)) +
   geom_histogram(binwidth=0.005)
 
 cor(td$close_ttm, td$close_dvr)
-cor(td$close_ttm, td$spread_ttm_dvr_close)
+cor(td$close_dvr, td$spread_ttm_dvr_ratio)
 
 ggpairs(td[, c(5, 17, 26, 27)])
