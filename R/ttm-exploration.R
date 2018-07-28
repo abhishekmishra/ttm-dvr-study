@@ -54,11 +54,17 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 ttm <- fread('./data/500570-ttm.csv')
 colnames(ttm) <- c('date', 'open', 'high', 'low', 'close', 'wap', 'num_shares', 'num_trades', 'turnover', 'qty', 'delivered_pct', 'spread_high_low', 'spread_close_open')
+
 dvr <- fread('./data/570001-ttm-dvr.csv')
 colnames(dvr) <- c('date', 'open', 'high', 'low', 'close', 'wap', 'num_shares', 'num_trades', 'turnover', 'qty', 'delivered_pct', 'spread_high_low', 'spread_close_open')
 
 td <- merge(ttm, dvr, by.x='date', by.y='date', suffixes = c('_ttm', '_dvr'))
 td$date <- as.POSIXct(strptime(td$date, '%d-%b-%Y'))
+sd <- as.POSIXct(as.Date("2011-09-11"))
+td[date < sd]$close_ttm <- td[date < sd]$close_ttm/5
+td[date < sd]$close_dvr <- td[date < sd]$close_dvr/5
+qplot(td$date, td$close_ttm)
+
 td$spread_ttm_dvr_close <- td$close_ttm - td$close_dvr
 td$spread_ttm_dvr_ratio <- td$spread_ttm_dvr_close / td$close_ttm
 td$close_ttm_ratio <- td$close_dvr/mean(td$close_ttm)
@@ -94,3 +100,5 @@ cor(td$close_ttm, td$close_dvr)
 cor(td$close_dvr, td$spread_ttm_dvr_ratio)
 
 ggpairs(td[, c(5, 17, 26, 27)])
+
+ggpairs(td[, c('num_shares_ttm', 'turnover_ttm', 'close_ttm'), with=F])
